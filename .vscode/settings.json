@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "master_process.h": "c",
+        "ahrs.h": "c",
+        "robot_def.h": "c",
+        "ins_task.h": "c",
+        "bmi088.h": "c",
+        "bsp_pwm.h": "c",
+        "arm_math.h": "c",
+        "dji_motor.h": "c",
+        "test.h": "c",
+        "general_def.h": "c",
+        "dmmotor.h": "c",
+        "controller.h": "c",
+        "bsp_can.h": "c",
+        "freertos.h": "c",
+        "stm32h7xx_hal.h": "c"
+    },
+    "C_Cpp.default.compilerPath": "D:/arm-none-eabi-gcc/bin/arm-none-eabi-g++.exe"
+}

@@ -1,0 +1,11 @@
+[{
+    "key": "ctrl+shift+b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "build task"
+},
+{
+    "key": "ctrl+shift+r",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Cmake rebuild"
+}
+]
