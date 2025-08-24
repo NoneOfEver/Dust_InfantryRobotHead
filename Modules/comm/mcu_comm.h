@@ -14,6 +14,14 @@ struct Struct_MCU_Comm_Data
     uint8_t Booster;            // 发射机构：准备、发射
 };
 
+struct Struct_MCU_Recv_Data
+{
+    uint8_t Start_Of_Frame;
+    uint8_t Armor;
+    uint8_t Yaw[4];
+    uint8_t Pitch[4];
+};
+
 
 class Class_MCU_Comm
 {
@@ -28,6 +36,13 @@ public:
         127,
         0,
         0,
+    };
+
+    Struct_MCU_Recv_Data MCU_Recv_Data = {
+    0xAB,
+        0x00,
+        {0x00,0x00,0x00,0x00},
+        {0x00,0x00,0x00,0x00},
     };
 
     void Init(FDCAN_HandleTypeDef *hcan,
@@ -49,6 +64,8 @@ protected:
     uint16_t CAN_Tx_ID;
     // 发送缓冲区
     uint8_t Tx_Data[8];
+    // 接收缓冲区
+    uint8_t Rx_Data[8];
     // 内部函数
     void Data_Process();
 };

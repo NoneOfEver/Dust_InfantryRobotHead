@@ -1,5 +1,6 @@
 #include "booster.h"
-#include "comm.h"
+#include "mcu_comm.h"
+#include "pc_comm.h"
 
 #include "bsp_usb.h"
 #include "cmsis_os2.h"
@@ -15,6 +16,8 @@ void Class_Commander::Init()
     VT03.Init(&huart1);
     // 与下板通讯服务初始化
     MCU_Comm.Init(&hfdcan2,0x00,0x01);
+    // 与上位机通讯初始化
+    PC_Comm.Init();
     // 发射机构初始化
     Booster.Init();
 
@@ -59,7 +62,17 @@ void Class_Commander::Task()
             Booster.Set_Shoot_Statue(0);
         }
 
+        // 将遥控器数据发给下板
         MCU_Comm.CAN_Send_Command();
+
+        // 将下板传回的数据发送给上位机
+        PC_Comm.PC_Send_Data.Armor = 0x00;
+        memcpy(PC_Comm.PC_Send_Data.Yaw, MCU_Comm.MCU_Recv_Data.Yaw, 4);
+        memcpy(PC_Comm.PC_Send_Data.Pitch, MCU_Comm.MCU_Recv_Data.Pitch, 4);
+        PC_Comm.Send_Message();
+
+        // 将上位机传回的数据发送给下板
+
 
         osDelay(10);
     }

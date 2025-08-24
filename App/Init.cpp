@@ -50,9 +50,9 @@ void Device_CAN2_Callback(Struct_CAN_Rx_Buffer *CAN_RxMessage)
 {
     switch (CAN_RxMessage->Header.Identifier)
     {
-    case (0x001):
+    case (0x00):
         {
-
+            Commander.MCU_Comm.CAN_RxCpltCallback(CAN_RxMessage->Data);
             break;
         }
     }
@@ -76,9 +76,9 @@ void VT03_UART1_Callback(uint8_t *Buffer, uint16_t Length)
  *
  * @param len 接收到的数据长度
  */
-void test_usb_rx_callback(uint16_t len)
+void usb_rx_callback(uint16_t len)
 {
-    USBTransmit(USB_RxBuf,len);
+    Commander.PC_Comm.RxCpltCallback();
 }
 
 /**
@@ -86,7 +86,7 @@ void test_usb_rx_callback(uint16_t len)
  *
  * @param len 发送的数据长度
  */
-void test_usb_tx_callback(uint16_t len)
+void usb_tx_callback(uint16_t len)
 {
 
 }
@@ -95,12 +95,7 @@ void Init()
 {
     HAL_Delay(10000);
     // USB初始化
-    USB_Init_Config_s USB_Init_Config = {
-        .tx_cbk = test_usb_tx_callback,
-        .rx_cbk = test_usb_rx_callback,
-    };
-    USB_RxBuf = USBInit(USB_Init_Config);
-
+    USB_Init(usb_tx_callback,usb_rx_callback);
     // UART1 初始化，新图传通讯
     UART_Init(&huart1,VT03_UART1_Callback,512);
     // CAN1 初始化，控制发射

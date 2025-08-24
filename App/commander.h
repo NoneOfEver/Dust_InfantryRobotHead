@@ -9,7 +9,8 @@
 // app
 #include "booster.h"
 // module
-#include "comm.h"
+#include "mcu_comm.h"
+#include "pc_comm.h"
 #include "VT03.h"
 
 class Class_Commander
@@ -19,6 +20,8 @@ public:
     Class_MCU_Comm MCU_Comm;
     // 与接收机通讯服务
     Class_VT03 VT03;
+    // 与上位机通讯
+    Class_PC_Comm PC_Comm;
     // 发射机构
     Class_Booster Booster;
 
