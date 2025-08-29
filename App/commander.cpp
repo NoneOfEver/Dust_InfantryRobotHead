@@ -72,7 +72,9 @@ void Class_Commander::Task()
         PC_Comm.Send_Message();
 
         // 将上位机传回的数据发送给下板
-
+        memcpy(MCU_Comm.MCU_AutoAim_Data.Yaw,&PC_Comm.PC_Recv_Data.Yaw,4 * sizeof(uint8_t));
+        memcpy(MCU_Comm.MCU_AutoAim_Data.Pitch,&PC_Comm.PC_Recv_Data.Pitch,4 * sizeof(uint8_t));
+        MCU_Comm.CAN_Send_AutoAim();
 
         osDelay(10);
     }

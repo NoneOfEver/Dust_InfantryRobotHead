@@ -42,8 +42,8 @@ void Class_Booster::Task()
     for (;;)
     {
         if (start_switch == 1){
-            Motor_Booster_1.Set_Target_Omega(30);
-            Motor_Booster_2.Set_Target_Omega(-30);
+            Motor_Booster_1.Set_Target_Omega(40);
+            Motor_Booster_2.Set_Target_Omega(-40);
         }else if(start_switch == 0){
             Motor_Booster_1.Set_Target_Omega(0);
             Motor_Booster_2.Set_Target_Omega(0);

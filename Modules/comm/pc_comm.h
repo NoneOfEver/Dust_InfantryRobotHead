@@ -7,19 +7,19 @@
 struct Struct_PC_Send_Data
 {
     uint8_t Start_Of_Frame = 0x5A;
-    uint8_t Armor;
+    uint8_t Armor = 0x00;
     uint8_t End_Of_Frame[6] = {0xCD, 0xCC, 0x00, 0x00, 0x00, 0x00};
-    uint8_t Yaw[4];
-    uint8_t Pitch[4];
+    uint8_t Yaw[4] = {0};
+    uint8_t Pitch[4] = {0};
 };
 
 struct Struct_PC_Recv_Data
 {
     uint8_t Start_Of_Frame = 0xA5;
-    uint8_t Yaw[4];
-    uint8_t Pitch[4];
-    uint8_t Fire;
-    uint8_t CRC16[2];
+    uint8_t Yaw[4] = {0};
+    uint8_t Pitch[4] = {0};
+    uint8_t Fire = 0x00;
+    uint8_t CRC16[2] = {0};
 };
 class Class_PC_Comm
 {

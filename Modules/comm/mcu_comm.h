@@ -22,6 +22,13 @@ struct Struct_MCU_Recv_Data
     uint8_t Pitch[4];
 };
 
+struct Struct_MCU_AutoAim_Data
+{
+    uint8_t Start_Of_Yaw_Frame;
+    uint8_t Start_Of_Pitch_Frame;
+    uint8_t Yaw[4];
+    uint8_t Pitch[4];
+};
 
 class Class_MCU_Comm
 {
@@ -36,6 +43,13 @@ public:
         127,
         0,
         0,
+    };
+
+    Struct_MCU_AutoAim_Data MCU_AutoAim_Data = {
+        0xAC,
+        0xAD,
+        {0},
+        {0},
     };
 
     Struct_MCU_Recv_Data MCU_Recv_Data = {
@@ -53,7 +67,7 @@ public:
     void CAN_RxCpltCallback(uint8_t *Rx_Data);
 
     void CAN_Send_Command();
-
+    void CAN_Send_AutoAim();
 
 protected:
     // 绑定的CAN
