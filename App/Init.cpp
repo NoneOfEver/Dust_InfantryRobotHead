@@ -5,6 +5,7 @@
 #include "bsp_usb.h"
 #include "bsp_usart.h"
 #include "commander.h"
+#include <cstdint>
 
 #include "Init.h"
 
@@ -67,7 +68,7 @@ void VT03_UART1_Callback(uint8_t *Buffer, uint16_t Length)
     Commander.MCU_Comm.MCU_Comm_Data.Chassis_Speed_X      = (uint8_t)(Commander.VT03.Data.Left_X*255);
     Commander.MCU_Comm.MCU_Comm_Data.Chassis_Speed_Y      = (uint8_t)(Commander.VT03.Data.Left_Y*255);
     Commander.MCU_Comm.MCU_Comm_Data.Chassis_Rotation     = (uint8_t)(Commander.VT03.Data.Wheel*255);
-    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin         = 0x00;
+    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin         = (uint8_t)(Commander.VT03.Data.Mode_Switch);
     Commander.MCU_Comm.MCU_Comm_Data.Booster              = 0x00;
 }
 

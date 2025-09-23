@@ -80,13 +80,10 @@ enum Enum_VT03_Status
  */
 enum Enum_VT03_Switch_Status
 {
-    VT03_Switch_Status_UP = 0,
-    VT03_Switch_Status_TRIG_UP_MIDDLE,
-    VT03_Switch_Status_TRIG_MIDDLE_UP,
-    VT03_Switch_Status_MIDDLE,
-    VT03_Switch_Status_TRIG_MIDDLE_DOWN,
-    VT03_Switch_Status_TRIG_DOWN_MIDDLE,
-    VT03_Switch_Status_DOWN,
+
+    VT03_STATUS_LEFT = 0,
+    VT03_STATUS_MIDDLE = 1,
+    VT03_STATUS_RIGHT = 2,
 };
 
 /**

@@ -201,100 +201,116 @@ void Class_VT03::Data_Process(uint16_t Length)
     // 拨轮信息
     Data.Wheel = (tmp_buffer->Wheel - Rocker_Offset) / Rocker_Num;
 
+    // 档位拨动开关信息
+    switch(tmp_buffer->Mode_Switch)
+    {
+        case 0:
+        Data.Mode_Switch = VT03_STATUS_LEFT;
+        break;
+        case 1:
+        Data.Mode_Switch = VT03_STATUS_MIDDLE;
+        break;
+        case 2:
+        Data.Mode_Switch = VT03_STATUS_RIGHT;
+        break;
+        default:
+        Data.Mode_Switch = VT03_STATUS_MIDDLE;
+        break;
+    }
     // 保留数据
     memcpy(&Pre_UART_Rx_Data, tmp_buffer, 21 * sizeof(uint8_t));
 
 }
 
-/**
- * @brief 判断拨动开关状态
- *
- */
-void Class_VT03::_Judge_Switch(Enum_VT03_Switch_Status *Switch, uint8_t Status, uint8_t Pre_Status)
-{
-    // 带触发的判断
-    switch (Pre_Status)
-    {
-    case (VT03_SWITCH_UP):
-    {
-        switch (Status)
-        {
-        case (VT03_SWITCH_UP):
-        {
-            *Switch = VT03_Switch_Status_UP;
+// /**
+//  * @brief 判断拨动开关状态
+//  *
+//  */
+// void Class_VT03::_Judge_Switch(Enum_VT03_Switch_Status *Switch, uint8_t Status, uint8_t Pre_Status)
+// {
+//     // 带触发的判断
+//     switch (Pre_Status)
+//     {
+//     case (VT03_SWITCH_UP):
+//     {
+//         switch (Status)
+//         {
+//         case (VT03_SWITCH_UP):
+//         {
+//             *Switch = VT03_Switch_Status_UP;
 
-            break;
-        }
-        case (VT03_SWITCH_DOWN):
-        {
-            *Switch = VT03_Switch_Status_TRIG_MIDDLE_DOWN;
+//             break;
+//         }
+//         case (VT03_SWITCH_DOWN):
+//         {
+//             *Switch = VT03_Switch_Status_TRIG_MIDDLE_DOWN;
 
-            break;
-        }
-        case (VT03_SWITCH_MIDDLE):
-        {
-            *Switch = VT03_Switch_Status_TRIG_UP_MIDDLE;
+//             break;
+//         }
+//         case (VT03_SWITCH_MIDDLE):
+//         {
+//             *Switch = VT03_Switch_Status_TRIG_UP_MIDDLE;
 
-            break;
-        }
-        }
+//             break;
+//         }
+//         }
 
-        break;
-    }
-    case (VT03_SWITCH_DOWN):
-    {
-        switch (Status)
-        {
-        case (VT03_SWITCH_UP):
-        {
-            *Switch = VT03_Switch_Status_TRIG_MIDDLE_UP;
+//         break;
+//     }
+//     case (VT03_SWITCH_DOWN):
+//     {
+//         switch (Status)
+//         {
+//         case (VT03_SWITCH_UP):
+//         {
+//             *Switch = VT03_Switch_Status_TRIG_MIDDLE_UP;
 
-            break;
-        }
-        case (VT03_SWITCH_DOWN):
-        {
-            *Switch = VT03_Switch_Status_DOWN;
+//             break;
+//         }
+//         case (VT03_SWITCH_DOWN):
+//         {
+//             *Switch = VT03_Switch_Status_DOWN;
 
-            break;
-        }
-        case (VT03_SWITCH_MIDDLE):
-        {
-            *Switch = VT03_Switch_Status_TRIG_DOWN_MIDDLE;
+//             break;
+//         }
+//         case (VT03_SWITCH_MIDDLE):
+//         {
+//             *Switch = VT03_Switch_Status_TRIG_DOWN_MIDDLE;
 
-            break;
-        }
-        }
+//             break;
+//         }
+//         }
 
-        break;
-    }
-    case (VT03_SWITCH_MIDDLE):
-    {
-        switch (Status)
-        {
-        case (VT03_SWITCH_UP):
-        {
-            *Switch = VT03_Switch_Status_TRIG_MIDDLE_UP;
+//         break;
+//     }
+//     case (VT03_SWITCH_MIDDLE):
+//     {
+//         switch (Status)
+//         {
+//         case (VT03_SWITCH_UP):
+//         {
+//             *Switch = VT03_Switch_Status_TRIG_MIDDLE_UP;
 
-            break;
-        }
-        case (VT03_SWITCH_DOWN):
-        {
-            *Switch = VT03_Switch_Status_TRIG_MIDDLE_DOWN;
+//             break;
+//         }
+//         case (VT03_SWITCH_DOWN):
+//         {
+//             *Switch = VT03_Switch_Status_TRIG_MIDDLE_DOWN;
 
-            break;
-        }
-        case (VT03_SWITCH_MIDDLE):
-        {
-            *Switch = VT03_Switch_Status_MIDDLE;
+//             break;
+//         }
+//         case (VT03_SWITCH_MIDDLE):
+//         {
+//             *Switch = VT03_Switch_Status_MIDDLE;
 
-            break;
-        }
-        }
+//             break;
+//         }
+//         }
 
-        break;
-    }
-    }
-}
+//         break;
+//     }
+//     }
+// }
 
 /**
  * @brief 判断按键状态
