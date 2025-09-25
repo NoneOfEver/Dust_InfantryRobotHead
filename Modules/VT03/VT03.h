@@ -129,7 +129,38 @@ class Class_VT03
 {
 public:
     // 遥控器VT03对外接口信息
-    Struct_VT03_Data Data;
+    Struct_VT03_Data Data = {
+        127,
+        127,
+        127,
+        127,
+        VT03_STATUS_MIDDLE,
+        127,
+        127,
+        127,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        127,
+    };
 
     void Init(UART_HandleTypeDef *huart);
 

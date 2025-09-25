@@ -9,7 +9,7 @@
                 "-f", "${workspaceRoot}/config/openocd_dap.cfg",
                 "-c", "program build/Dust_InfantryRobotHead.bin verify reset exit 0x08000000"
             ],
-            "problemMatcher": []
+            "problemMatcher": [],
         },
         {
             "label": "clang-tidy full scan",

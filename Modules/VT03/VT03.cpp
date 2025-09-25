@@ -181,45 +181,78 @@ void Class_VT03::Data_Process(uint16_t Length)
 {
     // 数据处理过程
     Struct_Remote_Data *tmp_buffer = (Struct_Remote_Data *) UART_Manage_Object->Rx_Buffer;
+    if((tmp_buffer->Start_Of_Frame_1 == 0xA9) && (tmp_buffer->Start_Of_Frame_2 == 0x53)){
+        // 摇杆信息
+        Data.Right_X = (tmp_buffer->Channel_0 - Rocker_Offset) / Rocker_Num;
+        Data.Right_Y = (tmp_buffer->Channel_1 - Rocker_Offset) / Rocker_Num;
+        Data.Left_X = (tmp_buffer->Channel_2 - Rocker_Offset) / Rocker_Num;
+        Data.Left_Y = (tmp_buffer->Channel_3 - Rocker_Offset) / Rocker_Num;
 
-    // 摇杆信息
-    Data.Right_X = (tmp_buffer->Channel_0 - Rocker_Offset) / Rocker_Num;
-    Data.Right_Y = (tmp_buffer->Channel_1 - Rocker_Offset) / Rocker_Num;
-    Data.Left_X = (tmp_buffer->Channel_2 - Rocker_Offset) / Rocker_Num;
-    Data.Left_Y = (tmp_buffer->Channel_3 - Rocker_Offset) / Rocker_Num;
+        // 自定义按键信息
+        _Judge_Key(&Data.Left_Key, tmp_buffer->Fn_1, Pre_UART_Rx_Data.Fn_1);
+        _Judge_Key(&Data.Right_Key, tmp_buffer->Fn_2, Pre_UART_Rx_Data.Fn_2);
+        _Judge_Key(&Data.Trigger, tmp_buffer->Trigger, Pre_UART_Rx_Data.Trigger);
 
-    // 自定义按键信息
-    _Judge_Key(&Data.Left_Key, tmp_buffer->Fn_1, Pre_UART_Rx_Data.Fn_1);
-    _Judge_Key(&Data.Right_Key, tmp_buffer->Fn_2, Pre_UART_Rx_Data.Fn_2);
-    _Judge_Key(&Data.Trigger, tmp_buffer->Trigger, Pre_UART_Rx_Data.Trigger);
+        // 鼠标信息
+        Data.Mouse_X = tmp_buffer->Mouse_X / 32768.0f;
+        Data.Mouse_Y = tmp_buffer->Mouse_Y / 32768.0f;
+        Data.Mouse_Z = tmp_buffer->Mouse_Z / 32768.0f;
 
-    // 鼠标信息
-    Data.Mouse_X = tmp_buffer->Mouse_X / 32768.0f;
-    Data.Mouse_Y = tmp_buffer->Mouse_Y / 32768.0f;
-    Data.Mouse_Z = tmp_buffer->Mouse_Z / 32768.0f;
+        // 拨轮信息
+        Data.Wheel = (tmp_buffer->Wheel - Rocker_Offset) / Rocker_Num;
 
-    // 拨轮信息
-    Data.Wheel = (tmp_buffer->Wheel - Rocker_Offset) / Rocker_Num;
-
-    // 档位拨动开关信息
-    switch(tmp_buffer->Mode_Switch)
-    {
-        case 0:
-        Data.Mode_Switch = VT03_STATUS_LEFT;
-        break;
-        case 1:
-        Data.Mode_Switch = VT03_STATUS_MIDDLE;
-        break;
-        case 2:
-        Data.Mode_Switch = VT03_STATUS_RIGHT;
-        break;
-        default:
-        Data.Mode_Switch = VT03_STATUS_MIDDLE;
-        break;
+        // 档位拨动开关信息
+        switch(tmp_buffer->Mode_Switch)
+        {
+            case 0:
+            Data.Mode_Switch = VT03_STATUS_LEFT;
+            break;
+            case 1:
+            Data.Mode_Switch = VT03_STATUS_MIDDLE;
+            break;
+            case 2:
+            Data.Mode_Switch = VT03_STATUS_RIGHT;
+            break;
+            default:
+            Data.Mode_Switch = VT03_STATUS_MIDDLE;
+            break;
+        }
+        // 保留数据
+        memcpy(&Pre_UART_Rx_Data, tmp_buffer, 21 * sizeof(uint8_t));
+    }else{
+        Data = {
+        127,
+        127,
+        127,
+        127,
+        VT03_STATUS_MIDDLE,
+        127,
+        127,
+        127,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
+        127,
+    };
     }
-    // 保留数据
-    memcpy(&Pre_UART_Rx_Data, tmp_buffer, 21 * sizeof(uint8_t));
-
 }
 
 // /**
