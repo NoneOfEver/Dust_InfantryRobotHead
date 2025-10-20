@@ -18,6 +18,8 @@ project(Dust_InfantryRobotHead C CXX ASM)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 #Uncomment for hardware floating point
 add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
 add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
@@ -49,49 +51,65 @@ else ()
     add_compile_options(-Og -g)
 endif ()
 
-include_directories(Core/Inc USB_DEVICE/App USB_DEVICE/Target Drivers/STM32H7xx_HAL_Driver/Inc Drivers/STM32H7xx_HAL_Driver/Inc/Legacy Middlewares/Third_Party/FreeRTOS/Source/include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F Middlewares/ST/STM32_USB_Device_Library/Core/Inc Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc Drivers/CMSIS/Device/ST/STM32H7xx/Include Drivers/CMSIS/Include Middlewares/ST/ARM/DSP/Inc)
 include_directories(
-        App
-        App/Booster
-        Modules
-        Modules/motor/DMmotor_new
-        Modules/motor/DJImotor
-        Modules/VT03
-        Modules/comm
-        Modules/algorithm/math
-        Modules/algorithm/pid
-        Bsp
-        Bsp/can
-        Bsp/gpio
-        Bsp/pwm
-        Bsp/sbus
-        Bsp/spi
-        Bsp/usart
-        Bsp/usb
-        Bsp/log
-        Bsp/dwt
-        Middlewares/Third_Party/SEGGER/Config
-        Middlewares/Third_Party/SEGGER/RTT
+        Board/dm-h723/
+        Board/dm-h723/Inc 
+        ThirdParty/STM32H7xx_HAL_Driver/Inc 
+        ThirdParty/STM32H7xx_HAL_Driver/Inc/Legacy 
+        ThirdParty/FreeRTOS/Source/include 
+        ThirdParty/FreeRTOS/Source/CMSIS_RTOS_V2 
+        ThirdParty/FreeRTOS/Source/portable/GCC/ARM_CM4F 
+        ThirdParty/STM32_USB_Device_Library/Core/Inc 
+        ThirdParty/STM32_USB_Device_Library/Class/CDC/Inc 
+        ThirdParty/ARM/DSP/Inc
+        ThirdParty/CMSIS/Device/ST/STM32H7xx/Include 
+        ThirdParty/CMSIS/Include 
 )
 
-add_definitions(-DDEBUG -DUSE_PWR_LDO_SUPPLY -DUSE_HAL_DRIVER -DSTM32H723xx)
+include_directories(
+        Interaction/
+        Algorithm/
+        Device/
+        Communication/
+        Drivers/
+        ThirdParty/SEGGER/Config
+        ThirdParty/SEGGER/RTT
+)
 
-file(GLOB_RECURSE SOURCES "Core/*.*" "Middlewares/*.*" "USB_DEVICE/*.*" "Drivers/*.*"
-        "App/*.*" "Modules/*.*" "Bsp/*.*")
+add_definitions(
+    -DDEBUG 
+    -DUSE_PWR_LDO_SUPPLY 
+    -DUSE_HAL_DRIVER 
+    -DSTM32H723xx
+)
 
-set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32H723VGTX_FLASH.ld)
+file(
+    GLOB_RECURSE SOURCES 
+    "Board/dm-h723/*.*" 
+    "ThirdParty/*.*" 
+    "Interaction/*.*" 
+    "Communication/*.*"
+    "Drivers/*.*" 
+    "Algorithm/*.*"
+    "Device/*.*"
+)
+
+set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Board/dm-h723/STM32H723VGTX_FLASH.ld)
 
 add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR}/${PROJECT_NAME}.map)
 add_link_options(-mcpu=cortex-m7 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
+
+link_directories(${CMAKE_SOURCE_DIR}/ThirdParty/ARM/DSP/Lib)
 
 add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
 
+target_link_libraries(${PROJECT_NAME}.elf libarm_cortexM7lfsp_math.a)
+
 add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${PROJECT_NAME}.elf> ${HEX_FILE}
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME}.elf> ${BIN_FILE}
-        COMMENT "Building ${HEX_FILE}
-Building ${BIN_FILE}")
+        COMMENT "Building ${HEX_FILE} Building ${BIN_FILE}")
