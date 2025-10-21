@@ -31,6 +31,14 @@ struct Struct_MCU_AutoAim_Data
     uint8_t Pitch[4];
 };
 
+struct McuImuData
+{
+    uint8_t start_of_yaw_frame;
+    uint8_t start_of_pitch_frame;
+    uint8_t yaw[4];
+    uint8_t pitch[4];
+};
+
 class Class_MCU_Comm
 {
 public:
@@ -49,8 +57,15 @@ public:
     Struct_MCU_AutoAim_Data MCU_AutoAim_Data = {
         0xAC,
         0xAD,
-        {0},
-        {0},
+        {0x00,0x00,0x00,0x00},
+        {0x00,0x00,0x00,0x00},
+    };
+
+    McuImuData mcu_imu_data_ = {
+        0xAE,
+        0xAF,
+        {0,0,0,0},
+        {0,0,0,0},
     };
 
     Struct_MCU_Recv_Data MCU_Recv_Data = {
@@ -69,6 +84,7 @@ public:
 
     void CAN_Send_Command();
     void CAN_Send_AutoAim();
+    void CanSendImu();
 
 protected:
     // 绑定的CAN

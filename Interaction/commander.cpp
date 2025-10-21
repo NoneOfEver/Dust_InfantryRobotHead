@@ -2,11 +2,8 @@
 #include "mcu_comm.h"
 #include "pc_comm.h"
 
-#include "bsp_usb.h"
 #include "bsp_dwt.h"
 #include "cmsis_os2.h"
-#include "drv_can.h"
-#include "bsp_usart.h"
 #include "VT03.h"
 #include "commander.h"
 #include "spi.h"

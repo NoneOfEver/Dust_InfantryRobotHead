@@ -1,5 +1,7 @@
 #include "mcu_comm.h"
 #include "VT03.h"
+#include "drv_can.h"
+#include "ins_task.h"
 
 void Class_MCU_Comm::Init(
      FDCAN_HandleTypeDef* hcan,
@@ -52,6 +54,33 @@ void Class_MCU_Comm::CAN_Send_AutoAim()
      CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, CAN_Tx_Frame, 8);
 }
 
+void Class_MCU_Comm::CanSendImu()
+{
+     static uint8_t can_tx_frame[8];
+     can_tx_frame[0] = mcu_imu_data_.start_of_yaw_frame;
+     // 把float转换成字节
+     union { float f; uint8_t b[4]; } conv;
+     conv.f = INS.Yaw;
+     can_tx_frame[1] = conv.b[0];
+     can_tx_frame[2] = conv.b[1];
+     can_tx_frame[3] = conv.b[2];
+     can_tx_frame[4] = conv.b[3];
+     can_tx_frame[5] = 0x00;
+     can_tx_frame[6] = 0x00;
+     can_tx_frame[7] = 0x00;
+     CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, can_tx_frame, 8);
+
+     can_tx_frame[0] = mcu_imu_data_.start_of_pitch_frame;
+     conv.f = INS.Pitch;
+     can_tx_frame[1] = conv.b[0];
+     can_tx_frame[2] = conv.b[1];
+     can_tx_frame[3] = conv.b[2];
+     can_tx_frame[4] = conv.b[3];
+     can_tx_frame[5] = 0x00;
+     can_tx_frame[6] = 0x00;
+     can_tx_frame[7] = 0x00; 
+     CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, can_tx_frame, 8);
+}
 void Class_MCU_Comm::Data_Process()
 {
 
