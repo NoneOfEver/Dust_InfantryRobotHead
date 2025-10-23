@@ -81,7 +81,7 @@ void Class_Commander::Task()
 
         // 将陀螺仪数据发送给下板
         MCU_Comm.CanSendImu();
-        osDelay(10);
+        osDelay(pdMS_TO_TICKS(1));
     }
 }
 

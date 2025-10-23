@@ -95,7 +95,7 @@ void usb_tx_callback(uint16_t len)
 
 void Init()
 {
-    HAL_Delay(10000);
+    osDelay(10000);
     // USB初始化
     USB_Init(usb_tx_callback,usb_rx_callback);
     // UART1 初始化，新图传通讯
