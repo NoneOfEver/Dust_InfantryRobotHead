@@ -13,7 +13,7 @@ void Class_Commander::Init()
     // dwt初始化
     dwt_init(480);
     // IMU初始化
-    Imu_.Init(&hspi2,0);
+    imu_.Init(&hspi2,0);
     // 图传接收机初始化
     VT03.Init(&huart1);
     // 与下板通讯服务初始化
@@ -79,6 +79,8 @@ void Class_Commander::Task()
         memcpy(MCU_Comm.MCU_AutoAim_Data.Pitch,&PC_Comm.PC_Recv_Data.Pitch,4 * sizeof(uint8_t));
         MCU_Comm.CAN_Send_AutoAim();
 
+        // 将陀螺仪数据发送给下板
+        MCU_Comm.CanSendImu();
         osDelay(10);
     }
 }

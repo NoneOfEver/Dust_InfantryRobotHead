@@ -18,7 +18,7 @@ class Class_Commander
 {
 public:
     // IMU
-    Imu Imu_;
+    Imu imu_;
     // 与下板通讯服务
     Class_MCU_Comm MCU_Comm;
     // 与接收机通讯服务

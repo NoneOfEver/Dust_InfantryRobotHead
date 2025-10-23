@@ -60,7 +60,7 @@ void Class_MCU_Comm::CanSendImu()
      can_tx_frame[0] = mcu_imu_data_.start_of_yaw_frame;
      // 把float转换成字节
      union { float f; uint8_t b[4]; } conv;
-     conv.f = INS.Yaw;
+     conv.f = INS.YawTotalAngle;
      can_tx_frame[1] = conv.b[0];
      can_tx_frame[2] = conv.b[1];
      can_tx_frame[3] = conv.b[2];

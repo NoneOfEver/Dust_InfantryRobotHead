@@ -15,7 +15,6 @@ private:
     {
         Imu *self = static_cast<Imu *>(argument);  // 还原 this 指针
         self->Task();  // 调用成员函数
-
     }
 public:
     void Task()
@@ -25,7 +24,6 @@ public:
             INS_Task();
             osDelay(pdMS_TO_TICKS(1)); // 1kHz
         }
-        
     }
     void Init(SPI_HandleTypeDef *bmi088_SPI, uint8_t calibrate)
     {
@@ -40,7 +38,6 @@ public:
         // 启动任务，将 this 传入
         osThreadNew(TaskEntry, this, &ImuTaskAttr);
     }
-
 };
 
 #endif /* IMU_H_ */
