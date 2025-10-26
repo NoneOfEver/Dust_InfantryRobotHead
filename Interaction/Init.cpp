@@ -64,13 +64,33 @@ void VT03_UART1_Callback(uint8_t *Buffer, uint16_t Length)
 {
     Commander.VT03.UART_RxCpltCallback(Buffer,Length);
     Commander.MCU_Comm.MCU_Comm_Data.Start_Of_Frame       = 0xAB;
-    Commander.MCU_Comm.MCU_Comm_Data.Yaw_Angle            = (uint8_t)(Commander.VT03.Data.Right_X*255);
-    Commander.MCU_Comm.MCU_Comm_Data.Pitch_Angle          = (uint8_t)(Commander.VT03.Data.Right_Y*255);
-    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Speed_X      = (uint8_t)(Commander.VT03.Data.Left_X*255);
-    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Speed_Y      = (uint8_t)(Commander.VT03.Data.Left_Y*255);
+    Commander.MCU_Comm.MCU_Comm_Data.Yaw_Angle            = (uint8_t)((Commander.VT03.Data.Right_X 
+                                                                        + Commander.VT03.Data.Mouse_X)*255);
+    Commander.MCU_Comm.MCU_Comm_Data.Pitch_Angle          = (uint8_t)((Commander.VT03.Data.Right_Y 
+                                                                        + Commander.VT03.Data.Mouse_Y)*255);
+    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Speed_X      = (uint8_t)((Commander.VT03.Data.Left_X 
+                                                                        - Commander.VT03.Data.Keyboard_Key[2] 
+                                                                        + Commander.VT03.Data.Keyboard_Key[3])
+                                                                        *255);
+    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Speed_Y      = (uint8_t)((Commander.VT03.Data.Left_Y 
+                                                                        - Commander.VT03.Data.Keyboard_Key[0] 
+                                                                        + Commander.VT03.Data.Keyboard_Key[1])
+                                                                        *255);
     Commander.MCU_Comm.MCU_Comm_Data.Chassis_Rotation     = (uint8_t)(Commander.VT03.Data.Wheel*255);
-    Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin         = (uint8_t)(Commander.VT03.Data.Mode_Switch);
-    Commander.MCU_Comm.MCU_Comm_Data.Supercap             = (uint8_t)(Commander.VT03.Data.Pause);
+    if(Commander.VT03.Data.Keyboard_Key[6] == VT03_Key_Status_PRESSED){
+        Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin = 0; //左小陀螺
+    }else if(Commander.VT03.Data.Keyboard_Key[7] == VT03_Key_Status_PRESSED){
+        Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin = 2; //右小陀螺
+    }else{
+        Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin = 0; //不小陀螺
+        Commander.MCU_Comm.MCU_Comm_Data.Chassis_Spin     = (uint8_t)(Commander.VT03.Data.Mode_Switch); //并允许遥控器命令进行覆盖
+    }
+    if(Commander.VT03.Data.Keyboard_Key[9] == VT03_Key_Status_PRESSED){
+        Commander.MCU_Comm.MCU_Comm_Data.Supercap = 1; //放电
+    }else{
+        Commander.MCU_Comm.MCU_Comm_Data.Supercap = 0; //充电
+        Commander.MCU_Comm.MCU_Comm_Data.Supercap         = (uint8_t)(Commander.VT03.Data.Pause); //并允许遥控器命令进行覆盖
+    }
 }
 
 /**

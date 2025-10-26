@@ -44,7 +44,7 @@ class Class_MCU_Comm
 public:
 
     Struct_MCU_Comm_Data MCU_Comm_Data = {
-    0xAB,
+        0xAB,
         127,
         127,
         127,

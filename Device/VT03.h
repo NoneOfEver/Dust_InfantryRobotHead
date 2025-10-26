@@ -54,13 +54,14 @@ struct Struct_Remote_Data
     uint64_t Fn_2 : 1; // 右侧开关
     uint64_t Wheel : 11;
     uint64_t Trigger : 1;
-
+    uint64_t reserved_1 : 3;
     int16_t Mouse_X;
     int16_t Mouse_Y;
     int16_t Mouse_Z;
     uint8_t Mouse_Left_Key : 2;
     uint8_t Mouse_Right_Key : 2;
-    uint8_t Mouse_Middle_Key:2;
+    uint8_t Mouse_Middle_Key : 2;
+    uint8_t reserved_2 : 2;
     uint16_t Key;
     uint16_t CRC16;
 } __attribute__((packed));
@@ -114,10 +115,12 @@ struct Struct_VT03_Data
     float Mouse_Z;
     Enum_VT03_Key_Status Left_Key;
     Enum_VT03_Key_Status Right_Key;
+    Enum_VT03_Key_Status Middle_Key;
     Enum_VT03_Key_Status Pause;
     Enum_VT03_Key_Status Trigger;
     Enum_VT03_Key_Status Mouse_Left_Key;
     Enum_VT03_Key_Status Mouse_Right_Key;
+    Enum_VT03_Key_Status Mouse_Middle_Key;
     Enum_VT03_Key_Status Keyboard_Key[16];
     float Wheel;
 };
@@ -139,6 +142,8 @@ public:
         127,
         127,
         127,
+        VT03_Key_Status_FREE,
+        VT03_Key_Status_FREE,
         VT03_Key_Status_FREE,
         VT03_Key_Status_FREE,
         VT03_Key_Status_FREE,

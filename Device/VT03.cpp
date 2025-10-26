@@ -194,11 +194,6 @@ void Class_VT03::Data_Process(uint16_t Length)
         _Judge_Key(&Data.Trigger, tmp_buffer->Trigger, Pre_UART_Rx_Data.Trigger);
         _Judge_Key(&Data.Pause, tmp_buffer->Pause, Pre_UART_Rx_Data.Pause);
 
-        // 鼠标信息
-        Data.Mouse_X = tmp_buffer->Mouse_X / 32768.0f;
-        Data.Mouse_Y = tmp_buffer->Mouse_Y / 32768.0f;
-        Data.Mouse_Z = tmp_buffer->Mouse_Z / 32768.0f;
-
         // 拨轮信息
         Data.Wheel = (tmp_buffer->Wheel - Rocker_Offset) / Rocker_Num;
 
@@ -218,17 +213,31 @@ void Class_VT03::Data_Process(uint16_t Length)
             Data.Mode_Switch = VT03_STATUS_MIDDLE;
             break;
         }
+
+        // 鼠标信息
+        Data.Mouse_X = tmp_buffer->Mouse_X / 32768.0f;
+        Data.Mouse_Y = tmp_buffer->Mouse_Y / 32768.0f;
+        Data.Mouse_Z = tmp_buffer->Mouse_Z / 32768.0f;
+        _Judge_Key(&Data.Mouse_Left_Key, tmp_buffer->Mouse_Left_Key, Pre_UART_Rx_Data.Mouse_Left_Key);
+        _Judge_Key(&Data.Mouse_Right_Key, tmp_buffer->Mouse_Right_Key, Pre_UART_Rx_Data.Mouse_Right_Key);
+        _Judge_Key(&Data.Mouse_Middle_Key, tmp_buffer->Mouse_Middle_Key, Pre_UART_Rx_Data.Mouse_Middle_Key);
+        // 键盘信息
+        for (int i = 0; i < 16; i++)
+        {
+            _Judge_Key(&Data.Keyboard_Key[i], ((tmp_buffer->Key) >> i) & 0x1, ((Pre_UART_Rx_Data.Key) >> i) & 0x1);
+        }
+
         // 保留数据
         memcpy(&Pre_UART_Rx_Data, tmp_buffer, 21 * sizeof(uint8_t));
     }else{
-        Data.Right_X = 127;
-        Data.Right_Y = 127;
-        Data.Left_X = 127;
-        Data.Left_Y = 127;
+        Data.Right_X = 0.0f;
+        Data.Right_Y = 0.0f;
+        Data.Left_X = 0.0f;
+        Data.Left_Y = 0.0f;
         Data.Mode_Switch = VT03_STATUS_MIDDLE;
-        Data.Mouse_X = 127;
-        Data.Mouse_Y = 127;
-        Data.Mouse_Z = 127;
+        Data.Mouse_X = 0.0f;
+        Data.Mouse_Y = 0.0f;
+        Data.Mouse_Z = 0.0f;
         Data.Left_Key = VT03_Key_Status_FREE;
         Data.Right_Key = VT03_Key_Status_FREE;
         Data.Pause = VT03_Key_Status_FREE;
