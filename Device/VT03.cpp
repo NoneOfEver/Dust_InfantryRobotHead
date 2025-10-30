@@ -3,7 +3,8 @@
 #include "VT03.h"
 
 /* Private macros ------------------------------------------------------------*/
-
+#define MOUSE_SENSITIVITY_X (30.0f)
+#define MOUSE_SENSITIVITY_Y (-2.0f)
 /* Private types -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -183,10 +184,10 @@ void Class_VT03::Data_Process(uint16_t Length)
     Struct_Remote_Data *tmp_buffer = (Struct_Remote_Data *) UART_Manage_Object->Rx_Buffer;
     if((tmp_buffer->Start_Of_Frame_1 == 0xA9) && (tmp_buffer->Start_Of_Frame_2 == 0x53)){
         // 摇杆信息
-        Data.Right_X = (tmp_buffer->Channel_0 - Rocker_Offset) / Rocker_Num;
-        Data.Right_Y = (tmp_buffer->Channel_1 - Rocker_Offset) / Rocker_Num;
-        Data.Left_X = (tmp_buffer->Channel_2 - Rocker_Offset) / Rocker_Num;
-        Data.Left_Y = (tmp_buffer->Channel_3 - Rocker_Offset) / Rocker_Num;
+        Data.Right_X = (tmp_buffer->Channel_0 - Rocker_Offset) / Rocker_Num; //右摇杆水平
+        Data.Right_Y = (tmp_buffer->Channel_1 - Rocker_Offset) / Rocker_Num; // 右摇杆竖直
+        Data.Left_X = (tmp_buffer->Channel_2 - Rocker_Offset) / Rocker_Num;  // 左摇杆竖直
+        Data.Left_Y = (tmp_buffer->Channel_3 - Rocker_Offset) / Rocker_Num;  // 左摇杆水平
 
         // 自定义按键信息
         _Judge_Key(&Data.Left_Key, tmp_buffer->Fn_1, Pre_UART_Rx_Data.Fn_1);
@@ -215,8 +216,13 @@ void Class_VT03::Data_Process(uint16_t Length)
         }
 
         // 鼠标信息
-        Data.Mouse_X = tmp_buffer->Mouse_X / 32768.0f;
-        Data.Mouse_Y = tmp_buffer->Mouse_Y / 32768.0f;
+        Data.Mouse_X = tmp_buffer->Mouse_X / 32768.0f * MOUSE_SENSITIVITY_X;
+        Data.Mouse_Y += tmp_buffer->Mouse_Y / 32768.0f * MOUSE_SENSITIVITY_Y;
+        if(Data.Mouse_Y > 0.5f){
+            Data.Mouse_Y = 0.5f;
+        }else if(Data.Mouse_Y < -0.5f){
+            Data.Mouse_Y = -0.5f;
+        }
         Data.Mouse_Z = tmp_buffer->Mouse_Z / 32768.0f;
         _Judge_Key(&Data.Mouse_Left_Key, tmp_buffer->Mouse_Left_Key, Pre_UART_Rx_Data.Mouse_Left_Key);
         _Judge_Key(&Data.Mouse_Right_Key, tmp_buffer->Mouse_Right_Key, Pre_UART_Rx_Data.Mouse_Right_Key);
@@ -230,37 +236,37 @@ void Class_VT03::Data_Process(uint16_t Length)
         // 保留数据
         memcpy(&Pre_UART_Rx_Data, tmp_buffer, 21 * sizeof(uint8_t));
     }else{
-        Data.Right_X = 0.0f;
-        Data.Right_Y = 0.0f;
-        Data.Left_X = 0.0f;
-        Data.Left_Y = 0.0f;
-        Data.Mode_Switch = VT03_STATUS_MIDDLE;
-        Data.Mouse_X = 0.0f;
-        Data.Mouse_Y = 0.0f;
-        Data.Mouse_Z = 0.0f;
-        Data.Left_Key = VT03_Key_Status_FREE;
-        Data.Right_Key = VT03_Key_Status_FREE;
-        Data.Pause = VT03_Key_Status_FREE;
-        Data.Trigger = VT03_Key_Status_FREE;
-        Data.Mouse_Left_Key = VT03_Key_Status_FREE;
-        Data.Mouse_Right_Key = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[0] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[1] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[2] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[3] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[4] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[5] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[6] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[7] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[8] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[9] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[10] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[11] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[12] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[13] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[14] = VT03_Key_Status_FREE;
-        Data.Keyboard_Key[15] = VT03_Key_Status_FREE;
-        Data.Wheel = 127;
+        // Data.Right_X = 0.0f;
+        // Data.Right_Y = 0.0f;
+        // Data.Left_X = 0.0f;
+        // Data.Left_Y = 0.0f;
+        // Data.Mode_Switch = VT03_STATUS_MIDDLE;
+        // Data.Mouse_X = 0.0f;
+        // Data.Mouse_Y = 0.0f;
+        // Data.Mouse_Z = 0.0f;
+        // Data.Left_Key = VT03_Key_Status_FREE;
+        // Data.Right_Key = VT03_Key_Status_FREE;
+        // Data.Pause = VT03_Key_Status_FREE;
+        // Data.Trigger = VT03_Key_Status_FREE;
+        // Data.Mouse_Left_Key = VT03_Key_Status_FREE;
+        // Data.Mouse_Right_Key = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[0] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[1] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[2] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[3] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[4] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[5] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[6] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[7] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[8] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[9] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[10] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[11] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[12] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[13] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[14] = VT03_Key_Status_FREE;
+        // Data.Keyboard_Key[15] = VT03_Key_Status_FREE;
+        // Data.Wheel = 127;
     }
 }
 

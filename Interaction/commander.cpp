@@ -46,7 +46,7 @@ void Class_Commander::Task()
         // parse_parameter(USB_RxBuf);
 
         // 左侧自定义按键逻辑
-        if (VT03.Data.Left_Key == VT03_Key_Status_TRIG_PRESSED_FREE){
+        if (VT03.Data.Left_Key == VT03_Key_Status_TRIG_PRESSED_FREE || VT03.Data.Keyboard_Key[9] == VT03_Key_Status_TRIG_PRESSED_FREE){
             if (Booster.Get_Switch_Statue() == 1){
                 Booster.Set_Switch_Statue(0);
             }else if(Booster.Get_Switch_Statue() == 0){
@@ -54,14 +54,14 @@ void Class_Commander::Task()
             }
         }
         //遥控器扳机键逻辑
-        if (VT03.Data.Right_Key == VT03_Key_Status_PRESSED){
+        if (VT03.Data.Right_Key == VT03_Key_Status_PRESSED || VT03.Data.Keyboard_Key[8] == VT03_Key_Status_PRESSED){
             Booster.Set_Reverse_Statue(1);
-        }else if (VT03.Data.Right_Key == VT03_Key_Status_FREE){
+        }else if (VT03.Data.Right_Key == VT03_Key_Status_FREE || VT03.Data.Keyboard_Key[8] == VT03_Key_Status_FREE){
             Booster.Set_Reverse_Statue(0);
         }
-        if (VT03.Data.Trigger == VT03_Key_Status_PRESSED){
+        if (VT03.Data.Trigger == VT03_Key_Status_PRESSED || VT03.Data.Mouse_Left_Key == VT03_Key_Status_PRESSED){
             Booster.Set_Shoot_Statue(1);
-        }else if (VT03.Data.Trigger == VT03_Key_Status_FREE){
+        }else if (VT03.Data.Trigger == VT03_Key_Status_FREE || VT03.Data.Mouse_Left_Key == VT03_Key_Status_FREE){
             Booster.Set_Shoot_Statue(0);
         }
 
