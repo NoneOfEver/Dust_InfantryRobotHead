@@ -4,6 +4,8 @@
 #include "bsp_usb.h"
 #include "cmsis_os2.h"
 
+extern uint8_t g_recived_flag;
+
 struct Struct_PC_Send_Data
 {
     uint8_t Start_Of_Frame = 0x5A;

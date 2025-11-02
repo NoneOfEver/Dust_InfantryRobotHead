@@ -2,6 +2,8 @@
 #include "VT03.h"
 #include "drv_can.h"
 #include "ins_task.h"
+#include "commander.h"
+#include "pc_comm.h"
 
 void Class_MCU_Comm::Init(
      FDCAN_HandleTypeDef* hcan,
@@ -38,20 +40,36 @@ void Class_MCU_Comm::CAN_Send_Command()
 
 void Class_MCU_Comm::CAN_Send_AutoAim()
 {
-     static uint8_t CAN_Tx_Frame[8];
-     CAN_Tx_Frame[0] = MCU_AutoAim_Data.Start_Of_Yaw_Frame;
-     CAN_Tx_Frame[1] = MCU_AutoAim_Data.Yaw[0];
-     CAN_Tx_Frame[2] = MCU_AutoAim_Data.Yaw[1];
-     CAN_Tx_Frame[3] = MCU_AutoAim_Data.Yaw[2];
-     CAN_Tx_Frame[4] = MCU_AutoAim_Data.Yaw[3];
-     CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, CAN_Tx_Frame, 8);
+     static uint8_t CAN_Tx_Frame_Yaw[8];
+     static uint8_t CAN_Tx_Frame_Pitch[8];
 
-     CAN_Tx_Frame[0] = MCU_AutoAim_Data.Start_Of_Pitch_Frame;
-     CAN_Tx_Frame[1] = MCU_AutoAim_Data.Pitch[0];
-     CAN_Tx_Frame[2] = MCU_AutoAim_Data.Pitch[1];
-     CAN_Tx_Frame[3] = MCU_AutoAim_Data.Pitch[2];
-     CAN_Tx_Frame[4] = MCU_AutoAim_Data.Pitch[3];
-     CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, CAN_Tx_Frame, 8);
+     CAN_Tx_Frame_Yaw[0] = MCU_AutoAim_Data.Start_Of_Yaw_Frame;
+     CAN_Tx_Frame_Pitch[0] = MCU_AutoAim_Data.Start_Of_Pitch_Frame;
+
+     if(g_recived_flag == 1){
+          CAN_Tx_Frame_Yaw[1] = MCU_AutoAim_Data.Yaw[0];
+          CAN_Tx_Frame_Yaw[2] = MCU_AutoAim_Data.Yaw[1];
+          CAN_Tx_Frame_Yaw[3] = MCU_AutoAim_Data.Yaw[2];
+          CAN_Tx_Frame_Yaw[4] = MCU_AutoAim_Data.Yaw[3];
+
+          CAN_Tx_Frame_Pitch[1] = MCU_AutoAim_Data.Pitch[0];
+          CAN_Tx_Frame_Pitch[2] = MCU_AutoAim_Data.Pitch[1];
+          CAN_Tx_Frame_Pitch[3] = MCU_AutoAim_Data.Pitch[2];
+          CAN_Tx_Frame_Pitch[4] = MCU_AutoAim_Data.Pitch[3];
+          g_recived_flag = 0;
+     }else{
+          CAN_Tx_Frame_Yaw[1] = 0x00;
+          CAN_Tx_Frame_Yaw[2] = 0x00;
+          CAN_Tx_Frame_Yaw[3] = 0x00;
+          CAN_Tx_Frame_Yaw[4] = 0x00;
+
+          CAN_Tx_Frame_Pitch[1] = 0x00;
+          CAN_Tx_Frame_Pitch[2] = 0x00;
+          CAN_Tx_Frame_Pitch[3] = 0x00;
+          CAN_Tx_Frame_Pitch[4] = 0x00;
+     }
+     CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, CAN_Tx_Frame_Yaw, 8);
+     CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, CAN_Tx_Frame_Pitch, 8);
 }
 
 void Class_MCU_Comm::CanSendImu()

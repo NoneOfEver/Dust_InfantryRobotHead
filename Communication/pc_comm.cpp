@@ -2,6 +2,8 @@
 #include "pc_comm.h"
 #include "cmsis_os2.h"
 
+uint8_t g_recived_flag;
+
 void Class_PC_Comm::Init()
 {
 
@@ -17,6 +19,8 @@ void Class_PC_Comm::Send_Message()
 void Class_PC_Comm::RxCpltCallback()
 {
     if (PC_Recv_Data.Start_Of_Frame == bsp_usb_rx_buffer[0]){
+        g_recived_flag = 1;
+        
         memcpy(PC_Recv_Data.Yaw,&bsp_usb_rx_buffer[1],4);
         memcpy(PC_Recv_Data.Pitch,&bsp_usb_rx_buffer[5],4);
         PC_Recv_Data.Fire       = bsp_usb_rx_buffer[9];
