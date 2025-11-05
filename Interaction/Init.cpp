@@ -73,7 +73,6 @@ void VT03_UART1_Callback(uint8_t *Buffer, uint16_t Length)
                                                                         + Commander.VT03.Data.Mouse_X)*255);
     Commander.MCU_Comm.MCU_Comm_Data.Pitch_Angle          = (uint8_t)((Commander.VT03.Data.Right_Y 
                                                                         + Commander.VT03.Data.Mouse_Y)*255);
-    //Commander.MCU_Comm.MCU_Comm_Data.Pitch_Angle          = (uint8_t)(Commander.VT03.Data.Right_Y*255);
 
     // --- 计算目标速度 ---
     if (Commander.VT03.Data.Keyboard_Key[0] == VT03_KEY_PRESSED) { // W

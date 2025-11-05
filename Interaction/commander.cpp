@@ -28,25 +28,23 @@ void Class_Commander::Init()
         .stack_size = 512,
         .priority = (osPriority_t) osPriorityNormal
     };
-    // 启动任务，将 this 传入
     osThreadNew(Class_Commander::TaskEntry, this, &CommanderTaskAttr);
 }
 
-// 任务入口（静态函数）—— osThreadNew 需要这个原型
+
 void Class_Commander::TaskEntry(void *argument)
 {
-    Class_Commander *self = static_cast<Class_Commander *>(argument);  // 还原 this 指针
-    self->Task();  // 调用成员函数
+    Class_Commander *self = static_cast<Class_Commander *>(argument);
+    self->Task();
 }
 
 void Class_Commander::Task()
 {
     for (;;)
     {
-        // parse_parameter(USB_RxBuf);
-
         // 左侧自定义按键逻辑
-        if (VT03.Data.Left_Key == VT03_Key_Status_TRIG_PRESSED_FREE || VT03.Data.Keyboard_Key[9] == VT03_Key_Status_TRIG_PRESSED_FREE){
+        if (VT03.Data.Left_Key == VT03_Key_Status_TRIG_PRESSED_FREE 
+            || VT03.Data.Keyboard_Key[9] == VT03_Key_Status_TRIG_PRESSED_FREE){
             if (Booster.Get_Switch_Statue() == 1){
                 Booster.Set_Switch_Statue(0);
             }else if(Booster.Get_Switch_Statue() == 0){
