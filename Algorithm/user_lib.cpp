@@ -14,7 +14,6 @@
 #include "string.h"
 #include "user_lib.h"
 #include "math.h"
-#include "main.h"
 
 #ifdef _CMSIS_OS_H
 #define user_malloc pvPortMalloc

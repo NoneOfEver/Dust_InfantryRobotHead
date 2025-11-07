@@ -6,14 +6,13 @@
 #include "cmsis_os2.h"
 #include "VT03.h"
 #include "commander.h"
-#include "spi.h"
 
 void Class_Commander::Init()
 {
     // dwt初始化
     dwt_init(480);
     // IMU初始化
-    imu_.Init(&hspi2,0);
+    imu_.Init();
     // 图传接收机初始化
     VT03.Init(&huart1);
     // 与下板通讯服务初始化

@@ -1,9 +1,9 @@
 #include "mcu_comm.h"
 #include "VT03.h"
 #include "drv_can.h"
-#include "ins_task.h"
 #include "commander.h"
 #include "pc_comm.h"
+#include "INS_Task.h"
 
 void Class_MCU_Comm::Init(
      FDCAN_HandleTypeDef* hcan,
@@ -78,7 +78,7 @@ void Class_MCU_Comm::CanSendImu()
      can_tx_frame[0] = mcu_imu_data_.start_of_yaw_frame;
      // 把float转换成字节
      union { float f; uint8_t b[4]; } conv;
-     conv.f = INS.YawTotalAngle;
+     conv.f = INS_Info.Yaw_TolAngle;
      can_tx_frame[1] = conv.b[0];
      can_tx_frame[2] = conv.b[1];
      can_tx_frame[3] = conv.b[2];
@@ -89,7 +89,7 @@ void Class_MCU_Comm::CanSendImu()
      CAN_Send_Data(CAN_Manage_Object->CAN_Handler, CAN_Tx_ID, can_tx_frame, 8);
 
      can_tx_frame[0] = mcu_imu_data_.start_of_pitch_frame;
-     conv.f = INS.Pitch;
+     conv.f = INS_Info.Pitch_Angle;
      can_tx_frame[1] = conv.b[0];
      can_tx_frame[2] = conv.b[1];
      can_tx_frame[3] = conv.b[2];
