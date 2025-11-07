@@ -8,11 +8,11 @@
 #include "FreeRTOS.h"
 // app
 #include "booster.h"
-#include "IMU.h"
 // module
 #include "mcu_comm.h"
 #include "pc_comm.h"
 #include "VT03.h"
+#include "IMU.hpp"
 
 class Class_Commander
 {
@@ -39,7 +39,6 @@ public:
     void Task();
 
 private:
-    // FreeRTOS 入口，静态函数
     static void TaskEntry(void *param);
 };
 

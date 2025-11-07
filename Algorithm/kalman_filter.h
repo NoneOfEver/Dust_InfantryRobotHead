@@ -1,121 +1,139 @@
-/**
- ******************************************************************************
- * @file    kalman filter.h
- * @author  Wang Hongxi
- * @version V1.2.2
- * @date    2022/1/8
- * @brief
- ******************************************************************************
- * @attention
- *
- ******************************************************************************
- */
-#ifndef __KALMAN_FILTER_H
-#define __KALMAN_FILTER_H
+#ifndef KALMAN_FILTER_H
+#define KALMAN_FILTER_H
 
-// cortex-m4 DSP lib
-/*
-#define __CC_ARM    // Keil
-#define ARM_MATH_CM4
-#define ARM_MATH_MATRIX_CHECK
-#define ARM_MATH_ROUNDING
-#define ARM_MATH_DSP    // define in arm_math.h
-*/
-
-#include "stm32h723xx.h"
-#include "arm_math.h"
-//#include "dsp/matrix_functions.h"
-#include "math.h"
 #include "stdint.h"
+#include "arm_math.h"
 #include "stdlib.h"
+#include "stdbool.h"
 
 #ifndef user_malloc
 #ifdef _CMSIS_OS_H
-#define user_malloc pvPortMalloc
+	#define user_malloc pvPortMalloc
 #else
-#define user_malloc malloc
+	#define User_malloc malloc
 #endif
 #endif
 
-#define mat arm_matrix_instance_f32
-#define Matrix_Init arm_mat_init_f32
-#define Matrix_Add arm_mat_add_f32
-#define Matrix_Subtract arm_mat_sub_f32
-#define Matrix_Multiply arm_mat_mult_f32
-#define Matrix_Transpose arm_mat_trans_f32
-#define Matrix_Inverse arm_mat_inverse_f32
+/**
+ * @brief macro definition of the matrix calculation.
+ */
+#define Matrix             arm_matrix_instance_f32
+#define Matrix_64          arm_matrix_instance_f64
+#define Matrix_Init        arm_mat_init_f32
+#define Matrix_Add         arm_mat_add_f32
+#define Matrix_Subtract    arm_mat_sub_f32
+#define Matrix_Multiply    arm_mat_mult_f32
+#define Matrix_Transpose   arm_mat_trans_f32
+#define Matrix_Inverse     arm_mat_inverse_f32
+#define Matrix_Inverse_64  arm_mat_inverse_f64
 
-typedef struct kf_t
+/* Exported types ------------------------------------------------------------*/
+/**
+ * @brief typedef structure that contains the information  for the Chi Square Test.
+ */
+typedef struct
 {
-    float *FilteredValue;
-    float *MeasuredVector;
-    float *ControlVector;
+  bool TestFlag;    /*!< Enable/Disable Flag */
+  Matrix ChiSquare_Matrix;   /*!< chi square test matrix */
+  float ChiSquare_Data[1];    /*!< chi square test matrix data */
+  float ChiSquareTestThresholds;    /*!< chi square test matrix Thresholds */
+  uint8_t ChiSquareCnt;   /*!< chi square test count */
+  bool Result;   /*!< chi square test result */
+}ChiSquareTest_Typedef;
 
-    uint8_t xhatSize;
-    uint8_t uSize;
-    uint8_t zSize;
+typedef struct KF_Info_TypeDef
+{
+  uint16_t sizeof_float, sizeof_double; /*!< size of float/double */
 
-    uint8_t UseAutoAdjustment;
-    uint8_t MeasurementValidNum;
+  uint8_t Xhat_Size;   /*!< state vector dimension */
+  uint8_t U_Size;      /*!< control vector dimension */
+  uint8_t Z_Size;      /*!< measurement vector dimension */
 
-    uint8_t *MeasurementMap;      // 量测与状态的关系 how measurement relates to the state
-    float *MeasurementDegree;     // 测量值对应H矩阵元素值 elements of each measurement in H
-    float *MatR_DiagonalElements; // 量测方差 variance for each measurement
-    float *StateMinVariance;      // 最小方差 避免方差过度收敛 suppress filter excessive convergence
-    uint8_t *temp;
+  float dt;   /*!< update cycle */
+  float *MeasuredVector; /*!< external measure vector pointer */
+  float *ControlVector;  /*!< external control vector pointer */
 
-    // 配合用户定义函数使用,作为标志位用于判断是否要跳过标准KF中五个环节中的任意一个
-    uint8_t SkipEq1, SkipEq2, SkipEq3, SkipEq4, SkipEq5;
+  ChiSquareTest_Typedef ChiSquareTest;  /*!< Chi Square Test */
 
-    // definiion of struct mat: rows & cols & pointer to vars
-    mat xhat;      // x(k|k)
-    mat xhatminus; // x(k|k-1)
-    mat u;         // control vector u
-    mat z;         // measurement vector z
-    mat P;         // covariance matrix P(k|k)
-    mat Pminus;    // covariance matrix P(k|k-1)
-    mat F, FT;     // state transition matrix F FT
-    mat B;         // control matrix B
-    mat H, HT;     // measurement matrix H
-    mat Q;         // process noise covariance matrix Q
-    mat R;         // measurement noise covariance matrix R
-    mat K;         // kalman gain  K
-    mat S, temp_matrix, temp_matrix1, temp_vector, temp_vector1;
+  /**
+   * @brief Instance structure for the floating-point matrix structure.
+   */
+  struct 
+  {
+    Matrix Xhat;              /*!< posteriori estimate Matrix */
+    Matrix Xhatminus;         /*!< priori estimate Matrix */
+    Matrix U;                 /*!< control vector */
+    Matrix Z;                 /*!< measurement vector */
+    Matrix B;                 /*!< control Matrix */ 
+    Matrix A,AT;              /*!< state transition Matrix */
+    Matrix H,HT;              /*!< measurement Matrix */
+    Matrix P;                 /*!< posteriori covariance Matrix */
+    Matrix Pminus;            /*!< priori covariance Matrix */
+    Matrix Q;                 /*!< process noise covariance Matrix */ 
+    Matrix R;                 /*!< measurement noise covariance Matrix */ 
+    Matrix K;                 /*!< kalman gain Matrix */
+    Matrix K_denominator;     /*!< K_denominator Matrix (K_denominator = H Pminus HT + R) */
+    Matrix Cache_Matrix[2];   /*!< calculate cache Matrix */
+    Matrix Cache_Vector[2];   /*!< calculate cache vector */
+  }Mat;
 
-    int8_t MatStatus;
+  arm_status MatStatus;   /*!< Error status. */
 
-    // 用户定义函数,可以替换或扩展基准KF的功能
-    void (*User_Func0_f)(struct kf_t *kf);
-    void (*User_Func1_f)(struct kf_t *kf);
-    void (*User_Func2_f)(struct kf_t *kf);
-    void (*User_Func3_f)(struct kf_t *kf);
-    void (*User_Func4_f)(struct kf_t *kf);
-    void (*User_Func5_f)(struct kf_t *kf);
-    void (*User_Func6_f)(struct kf_t *kf);
-    
-    // 矩阵存储空间指针
-    float *xhat_data, *xhatminus_data;
-    float *u_data;
-    float *z_data;
-    float *P_data, *Pminus_data;
-    float *F_data, *FT_data;
-    float *B_data;
-    float *H_data, *HT_data;
-    float *Q_data;
-    float *R_data;
-    float *K_data;
-    float *S_data, *temp_matrix_data, *temp_matrix_data1, *temp_vector_data, *temp_vector_data1;
-} KalmanFilter_t;
+  /**
+   * @brief Instance structure for the floating-point matrix data pointer.
+   */
+  struct 
+  {
+    float *Xhat,*Xhatminus;   /*!< posteriori/priori estimate matrix memory pointer */
+    float *U;                 /*!< control vector memory pointer */
+    float *Z;                 /*!< measurement vector memory pointer */
+    float *B;                 /*!< control matrix memory pointer */ 
+    float *A,*AT;             /*!< state transition matrix memory pointer */
+    float *H,*HT;             /*!< measurement matrix memory pointer */
+    float *P;                 /*!< posteriori covariance matrix memory pointer */
+    float *Pminus;            /*!< priori covariance matrix memory pointer */
+    float *Q;                 /*!< process noise covariance matrix memory pointer */ 
+    float *R;                 /*!< measurement noise covariance matrix memory pointer */ 
+    float *K;                 /*!< kalman gain matrix memory pointer */
+    float *K_denominator;     /*!< K_denominator matrix memory pointer */
+    float *Cache_Matrix[2];   /*!< calculate cache matrix memory pointer */
+    float *Cache_Vector[2];   /*!< calculate cache vector memory pointer */
+  }Data;
 
-extern uint16_t sizeof_float, sizeof_double;
+  uint8_t SkipStep1 : 1;  /*!< flag to skip the first step of kalman filter updating */
+  uint8_t SkipStep2 : 1;  /*!< flag to skip the second step of kalman filter updating */
+  uint8_t SkipStep3 : 1;  /*!< flag to skip the third step of kalman filter updating */
+  uint8_t SkipStep4 : 1;  /*!< flag to skip the fourth step of kalman filter updating */
+  uint8_t SkipStep5 : 1;  /*!< flag to skip the fifth step of kalman filter updating */
+  uint8_t reserve   : 3;
 
-void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uint8_t zSize);
-void Kalman_Filter_Measure(KalmanFilter_t *kf);
-void Kalman_Filter_xhatMinusUpdate(KalmanFilter_t *kf);
-void Kalman_Filter_PminusUpdate(KalmanFilter_t *kf);
-void Kalman_Filter_SetK(KalmanFilter_t *kf);
-void Kalman_Filter_xhatUpdate(KalmanFilter_t *kf);
-void Kalman_Filter_P_Update(KalmanFilter_t *kf);
-float *Kalman_Filter_Update(KalmanFilter_t *kf);
+  /**
+   * @brief user functions that can replace any step of kalman filter updating.
+   */
+  void (*User_Function0)(struct KF_Info_TypeDef *KF);
+  void (*User_Function1)(struct KF_Info_TypeDef *KF);
+  void (*User_Function2)(struct KF_Info_TypeDef *KF);
+  void (*User_Function3)(struct KF_Info_TypeDef *KF);
+  void (*User_Function4)(struct KF_Info_TypeDef *KF);
+  void (*User_Function5)(struct KF_Info_TypeDef *KF);
+  void (*User_Function6)(struct KF_Info_TypeDef *KF);
 
-#endif //__KALMAN_FILTER_H
+  float *Output;  /*!< kalman filter output */
+
+}KalmanFilter_Info_TypeDef;
+
+/* Exported functions prototypes ---------------------------------------------*/
+/**
+  * @brief Initializes the kalman filter according to the specified parameters in the KalmanFilter_Info_TypeDef.
+  */
+extern void Kalman_Filter_Init(KalmanFilter_Info_TypeDef *KF,uint8_t Xhat_Size,uint8_t U_Size,uint8_t Z_Size);
+/**
+  * @brief Update the Kalman Filter according to the specified parameters in the KalmanFilter_Info_TypeDef.
+  */
+extern float *Kalman_Filter_Update(KalmanFilter_Info_TypeDef *KF);
+
+#endif //KALMAN_FILTER_H
+
+
+
+
