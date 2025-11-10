@@ -3,9 +3,9 @@
 
 #include "BMI088driver.h"
 #include "spi.h"
-#include "ins_task.h"
 #include "cmsis_os2.h"
 #include "FreeRTOS.h"
+#include "imu_temp_ctrl.h"
 
 
 class Imu {
@@ -19,20 +19,14 @@ private:
 public:
     void Task()
     {
-        for(;;)
-        {
-            INS_Task();
-            osDelay(pdMS_TO_TICKS(1)); // 1kHz
-        }
+        IMU_task();
     }
-    void Init(SPI_HandleTypeDef *bmi088_SPI, uint8_t calibrate)
+    void Init()
     {
-        // 陀螺仪初始化
-        BMI088_Init(bmi088_SPI, calibrate);// 启用校准模式    
-        INS_Init(); // 逆时针为+ ，-180 ~ 180
+        INS_Init();
         static const osThreadAttr_t ImuTaskAttr = {
             .name = "ImuTask",
-            .stack_size = 512,
+            .stack_size = 4096,
             .priority = (osPriority_t) osPriorityNormal
         };
         // 启动任务，将 this 传入

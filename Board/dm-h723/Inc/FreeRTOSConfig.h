@@ -45,6 +45,8 @@
 
 /* USER CODE BEGIN Includes */
 /* Section where include file can be added */
+#include "SEGGER_SYSVIEW_FreeRTOS.h"
+
 /* USER CODE END Includes */
 
 /* Ensure definitions are only used by the compiler, and not by the assembler. */
@@ -116,7 +118,8 @@ to exclude the API function. */
 #define INCLUDE_uxTaskGetStackHighWaterMark  1
 #define INCLUDE_xTaskGetCurrentTaskHandle    1
 #define INCLUDE_eTaskGetState                1
-
+#define INCLUDE_xTaskGetIdleTaskHandle       1
+#define INCLUDE_pxTaskGetStackStart          1
 /*
  * The CMSIS-RTOS V2 FreeRTOS wrapper is dependent on the heap implementation used
  * by the application thus the correct define need to be enabled below

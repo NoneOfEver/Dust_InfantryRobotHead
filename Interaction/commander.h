@@ -8,7 +8,7 @@
 #include "FreeRTOS.h"
 // app
 #include "booster.h"
-#include "IMU.h"
+#include "IMU.hpp"
 // module
 #include "mcu_comm.h"
 #include "pc_comm.h"

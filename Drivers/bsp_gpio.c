@@ -12,20 +12,20 @@ static GPIOInstance *gpio_instance[GPIO_MX_DEVICE_NUM] = {NULL};
  *       一个Pin号只会对应一个EXTI,详情见gpio.md
  * @param GPIO_Pin 发生中断的GPIO_Pin
  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    // 如有必要,可以根据pinstate和HAL_GPIO_ReadPin来判断是上升沿还是下降沿/rise&fall等
-    GPIOInstance *gpio;
-    for (size_t i = 0; i < idx; i++)
-    {
-        gpio = gpio_instance[i];
-        if (gpio->GPIO_Pin == GPIO_Pin && gpio->gpio_model_callback != NULL)
-        {
-            gpio->gpio_model_callback(gpio);
-            return;
-        }
-    }
-}
+// void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+// {
+//     // 如有必要,可以根据pinstate和HAL_GPIO_ReadPin来判断是上升沿还是下降沿/rise&fall等
+//     GPIOInstance *gpio;
+//     for (size_t i = 0; i < idx; i++)
+//     {
+//         gpio = gpio_instance[i];
+//         if (gpio->GPIO_Pin == GPIO_Pin && gpio->gpio_model_callback != NULL)
+//         {
+//             gpio->gpio_model_callback(gpio);
+//             return;
+//         }
+//     }
+// }
 
 GPIOInstance *GPIORegister(GPIO_Init_Config_s *GPIO_config)
 {

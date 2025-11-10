@@ -22,20 +22,17 @@
 #define ARM_MATH_DSP    // define in arm_math.h
 */
 
-#include "stm32h723xx.h"
-#include "arm_math.h"
+
+
 //#include "dsp/matrix_functions.h"
-#include "math.h"
+//#include "math.h"
 #include "stdint.h"
 #include "stdlib.h"
+//#include "arm_math.h"
+// #include "dsp/matrix_functions.h"
+// #include "dsp/fast_math_functions.h"
+#include "arm_math.h"
 
-#ifndef user_malloc
-#ifdef _CMSIS_OS_H
-#define user_malloc pvPortMalloc
-#else
-#define user_malloc malloc
-#endif
-#endif
 
 #define mat arm_matrix_instance_f32
 #define Matrix_Init arm_mat_init_f32
@@ -110,6 +107,7 @@ typedef struct kf_t
 extern uint16_t sizeof_float, sizeof_double;
 
 void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uint8_t zSize);
+void Kalman_Filter_Reset(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uint8_t zSize);
 void Kalman_Filter_Measure(KalmanFilter_t *kf);
 void Kalman_Filter_xhatMinusUpdate(KalmanFilter_t *kf);
 void Kalman_Filter_PminusUpdate(KalmanFilter_t *kf);
